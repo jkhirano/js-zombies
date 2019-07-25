@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * Class => Item(name)
  * -----------------------------
@@ -8,6 +10,11 @@
  * @property {string} name
  */
 
+class Item {
+  constructor(name) {
+    this.name = name;
+  }
+}
 
 /**
  * Class => Weapon(name, damage)
@@ -25,13 +32,17 @@
  * @property {number} damage
  */
 
-
 /**
  * Weapon Extends Item Class
  * -----------------------------
  */
 
-
+class Weapon extends Item {
+  constructor(name, damage) {
+    super(name);
+    this.damage = damage;
+  }
+}
 
 /**
  * Class => Food(name, energy)
@@ -49,13 +60,18 @@
  * @property {number} energy
  */
 
-
 /**
  * Food Extends Item Class
  * -----------------------------
  */
 
-
+class Food extends Item {
+  constructor(name, energy) {
+    super(name);
+    this.name = name;
+    this.energy = energy;
+  }
+}
 
 /**
  * Class => Player(name, health, strength, speed)
@@ -79,6 +95,119 @@
  * @property {method} getMaxHealth         Returns private variable `maxHealth`.
  */
 
+class Player {
+  constructor(name, health, strength, speed) {
+    this.name = name;
+    this.health = health;
+    this.strength = strength;
+    this.speed = speed;
+    this.isAlive = true;
+    this.equipped = false;
+    this._pack = [];
+    this._maxHealth = 100;
+  }
+  getPack() {
+    return this._pack;
+  }
+
+  getMaxHealth() {
+    return this._maxHealth;
+  }
+
+  checkPack() {
+    let pack = this.getPack();
+    console.log(pack);
+    // does it need return before console.log?
+    // what's the diff between this.getPack() vs Player.getPack? Should we use one over the other?
+  }
+
+  takeItem(item) {
+    if (this._pack.length < 3) {
+      this._pack.push(item);
+    } else {
+      console.log("Pack is full, item can't be stored");
+    }
+  }
+
+  discardItem(item) {
+    let removedItem = this._pack.indexOf(item);
+
+    if (removedItem === -1) {
+      console.log("Nothing was discarded");
+      return false;
+    } else {
+      this._pack.splice(removedItem, 1);
+      console.log(`${this.name} ${item} items were discarded`);
+      return true;
+    }
+  }
+
+  equip(itemToEquip) {
+    // check if item is a weapon
+    if (!itemToEquip instanceof Weapon) {
+      return false;
+    }
+    // if there's no item, return false
+    let item = this._pack.indexOf(itemToEquip);
+
+    if (item === -1) {
+      return false;
+    } else {
+      // if there is an item, remove it
+      this._pack.splice(item, 1);
+      // if you are not equipped, get equipped
+      if (this.equipped) {
+        this._pack.push(this.equipped);
+      }
+      // swap weapon
+      this.equipped = itemToEquip;
+      return true;
+    }
+  }
+
+  eat(itemToEat) {
+    //check if item is food
+    if (!(itemToEat instanceof Food)) {
+      return false;
+    }
+
+    // if there's no item, return false
+    let item = this._pack.indexOf(itemToEat);
+    if (item === -1) {
+      return false;
+    }
+
+    // if there is an item, remove it
+    this._pack.splice(item, 1);
+    // increase health from food's energy
+    this.health += itemToEat.energy;
+    // if health exceeds maxhealth, set health to maxhealth
+    if (this.health > this._maxHealth) {
+      this.health = this._maxHealth;
+    }
+  }
+
+  useItem(item) {
+    if (item instanceof Weapon) {
+      return this.equip(item);
+    }
+    if (item instanceof Food) {
+      return this.eat(item);
+    }
+  }
+
+  equippedWith() {
+    // if weapon equipped
+    if (this.equipped) {
+      console.log(`${this.name} is equipped with ${this.equipped} `);
+      return this.equipped.name;
+    } else {
+      // if nothing is equipped
+      console.log(`${this.equipped} not equipped`);
+      return false;
+    }
+  }
+}
 
 /**
  * Player Class Method => checkPack()
@@ -91,7 +220,6 @@
  *
  * @name checkPack
  */
-
 
 /**
  * Player Class Method => takeItem(item)
@@ -110,7 +238,6 @@
  * @param {Item/Weapon/Food} item   The item to take.
  * @return {boolean} true/false     Whether player was able to store item in pack.
  */
-
 
 /**
  * Player Class Method => discardItem(item)
@@ -138,7 +265,6 @@
  * @return {boolean} true/false     Whether player was able to remove item from pack.
  */
 
-
 /**
  * Player Class Method => equip(itemToEquip)
  * -----------------------------
@@ -159,7 +285,6 @@
  * @param {Weapon} itemToEquip  The weapon item to equip.
  */
 
-
 /**
  * Player Class Method => eat(itemToEat)
  * -----------------------------
@@ -179,7 +304,6 @@
  * @param {Food} itemToEat  The food item to eat.
  */
 
-
 /**
  * Player Class Method => useItem(item)
  * -----------------------------
@@ -192,7 +316,6 @@
  * @name useItem
  * @param {Item/Weapon/Food} item   The item to use.
  */
-
 
 /**
  * Player Class Method => equippedWith()
@@ -207,7 +330,6 @@
  * @name equippedWith
  * @return {string/boolean}   Weapon name or false if nothing is equipped.
  */
-
 
 /**
  * Class => Zombie(health, strength, speed)
@@ -225,6 +347,30 @@
  * @property {boolean} isAlive      Default value should be `true`.
  */
 
+class Zombie {
+  constructor(health, strength, speed) {
+    this.health = health;
+    this.strength = strength;
+    this.speed = speed;
+    this.isAlive = true;
+  }
+}
+
+class FastZombie extends Zombie {
+  super(health, strength, speed) {}
+}
+
+class StrongZombie extends Zombie {
+  super(health, strength, speed) {}
+}
+
+class RangedZombie extends Zombie {
+  super(health, strength, speed) {}
+}
+
+class ExplodingZombie extends Zombie {
+  super(health, strength, speed) {}
+}
 
 /**
  * Class => FastZombie(health, strength, speed)
@@ -241,13 +387,10 @@
  * @param {number} speed            The zombie's speed.
  */
 
-
 /**
  * FastZombie Extends Zombie Class
  * -----------------------------
  */
-
-
 
 /**
  * Class => StrongZombie(health, strength, speed)
@@ -264,13 +407,10 @@
  * @param {number} speed            The zombie's speed.
  */
 
-
 /**
  * StrongZombie Extends Zombie Class
  * -----------------------------
  */
-
-
 
 /**
  * Class => RangedZombie(health, strength, speed)
@@ -287,13 +427,10 @@
  * @param {number} speed            The zombie's speed.
  */
 
-
 /**
  * RangedZombie Extends Zombie Class
  * -----------------------------
  */
-
-
 
 /**
  * Class => ExplodingZombie(health, strength, speed)
@@ -310,14 +447,10 @@
  * @param {number} speed            The zombie's speed.
  */
 
-
 /**
  * ExplodingZombie Extends Zombie Class
  * -----------------------------
  */
-
-
-
 
 /**
  * Sample run.
@@ -330,11 +463,9 @@ function runGame() {
   // var tank = new StrongZombie(250, 100, 15);
   // var spitter = new RangedZombie(150, 20, 20);
   // var boomer = new ExplodingZombie(50, 15, 10);
-
   // var shovel = new Weapon("shovel", 15);
   // var sandwich = new Food("sandwich", 30);
   // var chainsaw = new Weapon("chainsaw", 25);
-
   // player.takeItem(shovel);
   // player.takeItem(sandwich);
   // player.takeItem(chainsaw);
@@ -343,16 +474,13 @@ function runGame() {
   // player.checkPack();
   // player.takeItem(shovel);
   // player.checkPack();
-
   // player.equippedWith();
   // player.useItem(chainsaw);
   // player.equippedWith();
   // player.checkPack();
-
   // player.useItem(shovel);
   // player.equippedWith();
   // player.checkPack();
-
   // player.health = 487;
   // console.log("Before health: " + player.health);
   // player.useItem(sandwich);
